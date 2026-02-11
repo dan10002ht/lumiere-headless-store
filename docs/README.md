@@ -251,10 +251,10 @@ sdk.destroy();
 
 | Guide                                        | Description                             |
 | -------------------------------------------- | --------------------------------------- |
-| [Product Widget](docs/product-widget.md)     | Subscription widget on product pages    |
-| [Product Bundle](docs/product-bundle.md)     | Product bundle widget on product pages  |
-| [Subscription Box](docs/subscription-box.md) | Subscription box on dedicated pages     |
-| [Customer Portal](docs/customer-portal.md)   | Customer subscription management portal |
+| [Product Widget](./product-widget.md)     | Subscription widget on product pages    |
+| [Product Bundle](./product-bundle.md)     | Product bundle widget on product pages  |
+| [Subscription Box](./subscription-box.md) | Subscription box on dedicated pages     |
+| [Customer Portal](./customer-portal.md)   | Customer subscription management portal |
 
 ---
 

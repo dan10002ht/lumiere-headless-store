@@ -33,11 +33,11 @@ SDK                              Scripttag (portal)              Headless Store
 ## Quick Start
 
 ```javascript
-import { PortalSDK } from 'joy-subscription-sdk/portal';
+import {PortalSDK} from 'joy-subscription-sdk/portal';
 
 const sdk = new PortalSDK({
   shopDomain: 'your-store.myshopify.com',
-  storefrontAccessToken: 'your-storefront-access-token',
+  storefrontAccessToken: 'your-storefront-access-token'
 });
 
 await sdk.initCustomerPortal();
@@ -62,17 +62,19 @@ await sdk.initCustomerPortal();
 
 // With options
 await sdk.initCustomerPortal({
-  autoLoadScript: true,   // Default: true - auto load portal script
-  customer: {             // Optional: pre-authenticated customer data
+  autoLoadScript: true, // Default: true - auto load portal script
+  customer: {
+    // Optional: pre-authenticated customer data
     id: 'gid://shopify/Customer/123',
     email: 'customer@example.com',
     firstName: 'John',
-    lastName: 'Doe',
-  },
+    lastName: 'Doe'
+  }
 });
 ```
 
 **What it does:**
+
 1. Fetches shop data via `client.getShopData()` (includes settings + translations + localization)
 2. Sets `window.AVADA_SUBSCRIPTION` with shop data + `shopId` + `isPortal: true`
 3. Initializes `window.Shopify` globals (currency, country, shop, routes)
@@ -81,6 +83,7 @@ await sdk.initCustomerPortal({
 6. Emits `avada:portal:init` event
 
 **Authentication:** The scripttag handles authentication internally. It supports:
+
 - **Customer Account API** (OAuth 2.0 + PKCE) - recommended
 - **Legacy OTP** - email/OTP login flow
 - **Shopify HMAC** - merchant preview mode
@@ -96,6 +99,7 @@ sdk.destroyCustomerPortal();
 ```
 
 **What it cleans up:**
+
 - Portaled elements on `document.body` (mobile tabs)
 - Portal container content
 - `.Avada-CustomerPortal--Headless` class from body and container
@@ -113,14 +117,14 @@ sdk.preloadPortal();
 
 ## Routing Requirement
 
-Headless stores should use the URL pattern `/pages/subscription-management` (or similar) with sub-routes:
+Headless stores should use the URL pattern `/pages/joy-subscription` with sub-routes:
 
-| Path | Page |
-|------|------|
-| `/pages/subscription-management` | Subscription list |
-| `/pages/subscription-management/subscription?contractId=xxx` | Subscription detail |
-| `/pages/subscription-management/order` | Order details |
-| `/pages/subscription-management/upcoming-orders` | Upcoming orders |
+| Path                                                     | Page                |
+| -------------------------------------------------------- | ------------------- |
+| `/pages/joy-subscription`                                | Subscription list   |
+| `/pages/joy-subscription/subscription?contractId=xxx`    | Subscription detail |
+| `/pages/joy-subscription/order`                          | Order details       |
+| `/pages/joy-subscription/upcoming-orders`                | Upcoming orders     |
 
 The scripttag derives the current page from `window.location.pathname` relative to the portal base path.
 
@@ -149,8 +153,8 @@ await sdk.initCustomerPortal({
     id: 'gid://shopify/Customer/123',
     email: 'customer@example.com',
     firstName: 'John',
-    lastName: 'Doe',
-  },
+    lastName: 'Doe'
+  }
 });
 ```
 
@@ -161,19 +165,19 @@ await sdk.initCustomerPortal({
 ### React / Next.js
 
 ```jsx
-import { useEffect } from 'react';
-import { PortalSDK } from 'joy-subscription-sdk/portal';
+import {useEffect} from 'react';
+import {PortalSDK} from 'joy-subscription-sdk/portal';
 
-export function CustomerPortalPage({ cartId, cartLinesAdd }) {
+export function CustomerPortalPage({cartId, cartLinesAdd}) {
   useEffect(() => {
     const sdk = new PortalSDK({
       shopDomain: process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN,
-      storefrontAccessToken: process.env.NEXT_PUBLIC_STOREFRONT_TOKEN,
+      storefrontAccessToken: process.env.NEXT_PUBLIC_STOREFRONT_TOKEN
     });
 
     // Handle "Add new subscription" action
-    const unsubscribe = sdk.on('add-to-cart', async (data) => {
-      await cartLinesAdd({ cartId, lines: data.lines });
+    const unsubscribe = sdk.on('add-to-cart', async data => {
+      await cartLinesAdd({cartId, lines: data.lines});
       window.location.href = '/checkout';
     });
 
@@ -198,23 +202,23 @@ export function CustomerPortalPage({ cartId, cartLinesAdd }) {
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount } from 'vue';
-import { PortalSDK } from 'joy-subscription-sdk/portal';
-import { useCart } from '@/composables/useCart';
+import {onMounted, onBeforeUnmount} from 'vue';
+import {PortalSDK} from 'joy-subscription-sdk/portal';
+import {useCart} from '@/composables/useCart';
 
-const { cartId, cartLinesAdd } = useCart();
+const {cartId, cartLinesAdd} = useCart();
 let sdk;
 let unsubscribe;
 
 onMounted(async () => {
   sdk = new PortalSDK({
     shopDomain: import.meta.env.VITE_SHOPIFY_DOMAIN,
-    storefrontAccessToken: import.meta.env.VITE_STOREFRONT_TOKEN,
+    storefrontAccessToken: import.meta.env.VITE_STOREFRONT_TOKEN
   });
 
   // Handle "Add new subscription" action
-  unsubscribe = sdk.on('add-to-cart', async (data) => {
-    await cartLinesAdd({ cartId: cartId.value, lines: data.lines });
+  unsubscribe = sdk.on('add-to-cart', async data => {
+    await cartLinesAdd({cartId: cartId.value, lines: data.lines});
     window.location.href = '/checkout';
   });
 
@@ -236,9 +240,9 @@ onBeforeUnmount(() => {
 When users click "Add new subscription" in the customer portal, the scripttag emits an `avada:add-to-cart` event instead of calling `/cart/add.js`. Your headless store must handle this event.
 
 ```javascript
-sdk.on('add-to-cart', async (data) => {
+sdk.on('add-to-cart', async data => {
   // data.lines - Array of CartLineInput (GID format, ready for Storefront API)
-  const { cart } = await cartLinesAdd({ cartId, lines: data.lines });
+  const {cart} = await cartLinesAdd({cartId, lines: data.lines});
 
   // Redirect to checkout or open cart drawer
   window.location.href = '/checkout';
@@ -262,12 +266,14 @@ Each line in `data.lines`:
 In Shopify themes, text colors inherit from the theme's CSS. In headless stores, the SDK automatically injects styles to ensure proper text visibility.
 
 **Automatic behavior:**
+
 - Injects CSS with `.Avada-CustomerPortal--Headless` selector
 - Adds the class to `document.body` and `#Avada-SubscriptionManagement__Container`
 - Sets text color, font-family, and line-height
 - Handles modals rendered via `createPortal` to body
 
 **Styles applied:**
+
 ```css
 .Avada-CustomerPortal--Headless {
   color: var(--sub-color-primary, #1c1c1c);
@@ -297,6 +303,7 @@ In Shopify themes, text colors inherit from the theme's CSS. In headless stores,
 ### Authentication redirect loop
 
 The Customer Account API OAuth flow requires:
+
 1. Your headless store domain must be configured as a valid redirect URL
 2. Network access to the Joy Subscription API for token exchange
 
@@ -315,6 +322,7 @@ onBeforeUnmount(() => sdk?.destroyCustomerPortal());
 ### Text colors not visible
 
 The SDK automatically injects headless styles. If text is still invisible:
+
 1. Check if `.Avada-CustomerPortal--Headless` class is on body and container
 2. Ensure your CSS doesn't override with `color: transparent` or similar
 3. The styles are injected 100ms after script load - if rendering before this, wait for `avada:portal:init` event

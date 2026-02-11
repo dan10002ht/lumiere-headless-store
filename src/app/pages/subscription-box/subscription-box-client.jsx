@@ -5,7 +5,7 @@ import { BoxSDK } from "joy-subscription-sdk/box";
 import useCartStore from "@/store/cart-store";
 import { cartDiscountCodesUpdate } from "@/lib/shopify";
 
-export default function SubscriptionBoxClient({ boxId }) {
+export default function SubscriptionBoxClient() {
   const sdkRef = useRef(null);
   const { addItem, cart, openCart } = useCartStore();
 
