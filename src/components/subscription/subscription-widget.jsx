@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import { WidgetSDK } from "joy-subscription-sdk/widget";
+import { SCRIPTS } from "joy-subscription-sdk/core";
+import { reloadScript, removeScript } from "@/lib/sdk-script-loader";
 
 const sdkConfig = {
   shopDomain: process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN,
@@ -25,13 +27,17 @@ export default function SubscriptionWidget({
       onPlanSelect?.(data);
     });
 
-    sdk.initProduct(productHandle, {
-      ...(variantId && { variantId }),
-    });
+    sdk
+      .initProduct(productHandle, {
+        autoLoadScript: false,
+        ...(variantId && { variantId }),
+      })
+      .then(() => reloadScript(SCRIPTS.WIDGET));
 
     return () => {
       unsubRef.current?.();
       sdk.destroy();
+      removeScript(SCRIPTS.WIDGET);
     };
   }, [productHandle]);
 

@@ -2,8 +2,10 @@
 
 import { useEffect, useRef } from "react";
 import { ProductBundleSDK } from "joy-subscription-sdk/productBundle";
+import { SCRIPTS } from "joy-subscription-sdk/core";
 import useCartStore from "@/store/cart-store";
 import { cartDiscountCodesUpdate } from "@/lib/shopify";
+import { reloadScript, removeScript } from "@/lib/sdk-script-loader";
 
 const sdkConfig = {
   shopDomain: process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN,
@@ -33,11 +35,14 @@ export default function ProductBundleWidget({ productHandle }) {
       openCart();
     });
 
-    sdk.initProductBundle(productHandle);
+    sdk
+      .initProductBundle(productHandle, { autoLoadScript: false })
+      .then(() => reloadScript(SCRIPTS.WIDGET));
 
     return () => {
       unsubRef.current?.();
       sdk.destroy();
+      removeScript(SCRIPTS.WIDGET);
     };
   }, [productHandle]);
 

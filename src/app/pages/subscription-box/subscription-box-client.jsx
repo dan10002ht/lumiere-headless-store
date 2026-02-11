@@ -2,8 +2,10 @@
 
 import { useEffect, useRef } from "react";
 import { BoxSDK } from "joy-subscription-sdk/box";
+import { SCRIPTS } from "joy-subscription-sdk/core";
 import useCartStore from "@/store/cart-store";
 import { cartDiscountCodesUpdate } from "@/lib/shopify";
+import { reloadScript, removeScript } from "@/lib/sdk-script-loader";
 
 const sdkConfig = {
   shopDomain: process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN,
@@ -32,11 +34,18 @@ export default function SubscriptionBoxClient() {
       openCart();
     });
 
-    sdk.initSubscriptionBox();
+    sdk
+      .initSubscriptionBox({ autoLoadScript: false, includeFixedBundle: false })
+      .then(async () => {
+        await reloadScript(SCRIPTS.SUBSCRIPTION_BOX);
+        await reloadScript(SCRIPTS.SUBSCRIPTION_BOX_FIXED_BUNDLE);
+      });
 
     return () => {
       unsubscribe();
       sdk.destroySubscriptionBox();
+      removeScript(SCRIPTS.SUBSCRIPTION_BOX);
+      removeScript(SCRIPTS.SUBSCRIPTION_BOX_FIXED_BUNDLE);
     };
   }, []);
 
