@@ -1,18 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Truck, Leaf, Hand } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import useCartStore from "@/store/cart-store";
 import { formatPrice } from "@/lib/shopify";
+import SubscriptionWidget from "@/components/subscription/subscription-widget";
+import ProductBundleWidget from "@/components/subscription/product-bundle-widget";
 
 export default function ProductInfo({ product }) {
   const variants = product.variants.edges.map((edge) => edge.node);
   const [selectedVariant, setSelectedVariant] = useState(variants[0]);
   const { addItem, loading } = useCartStore();
   const [justAdded, setJustAdded] = useState(false);
+  const [subscriptionSelection, setSubscriptionSelection] = useState(null);
 
   const optionNames = [
     ...new Set(
@@ -52,12 +55,20 @@ export default function ProductInfo({ product }) {
     if (match) setSelectedVariant(match);
   };
 
+  const handlePlanSelect = useCallback((data) => {
+    setSubscriptionSelection(data);
+  }, []);
+
   const handleAddToCart = () => {
-    if (selectedVariant?.availableForSale) {
-      addItem(selectedVariant.id);
-      setJustAdded(true);
-      setTimeout(() => setJustAdded(false), 2000);
-    }
+    if (!selectedVariant?.availableForSale) return;
+
+    const variantId =
+      subscriptionSelection?.variantId || selectedVariant.id;
+    const sellingPlanId = subscriptionSelection?.sellingPlanId || null;
+
+    addItem(variantId, 1, sellingPlanId);
+    setJustAdded(true);
+    setTimeout(() => setJustAdded(false), 2000);
   };
 
   const price = selectedVariant.price;
@@ -65,6 +76,8 @@ export default function ProductInfo({ product }) {
   const hasDiscount =
     compareAtPrice &&
     parseFloat(compareAtPrice.amount) > parseFloat(price.amount);
+
+  const isSubscription = !!subscriptionSelection?.sellingPlanId;
 
   return (
     <div className="space-y-6">
@@ -114,6 +127,13 @@ export default function ProductInfo({ product }) {
         </div>
       )}
 
+      {/* Subscription Widget */}
+      <SubscriptionWidget
+        productHandle={product.handle}
+        variantId={selectedVariant?.id}
+        onPlanSelect={handlePlanSelect}
+      />
+
       {/* Add to cart */}
       <Button
         onClick={handleAddToCart}
@@ -143,6 +163,8 @@ export default function ProductInfo({ product }) {
                 ? "Sold Out"
                 : loading
                 ? "Adding..."
+                : isSubscription
+                ? "Subscribe"
                 : "Add to Cart"}
             </motion.span>
           )}
@@ -161,6 +183,9 @@ export default function ProductInfo({ product }) {
           <Hand className="h-3.5 w-3.5" /> Handcrafted
         </span>
       </div>
+
+      {/* Product Bundle Widget */}
+      <ProductBundleWidget productHandle={product.handle} />
 
       {/* Description */}
       {product.descriptionHtml && (

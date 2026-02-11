@@ -28,7 +28,7 @@ const useCartStore = create((set, get) => ({
     }
   },
 
-  addItem: async (variantId, quantity = 1) => {
+  addItem: async (variantId, quantity = 1, sellingPlanId = null) => {
     const { cart } = get();
     set({ loading: true });
 
@@ -41,9 +41,10 @@ const useCartStore = create((set, get) => ({
         localStorage.setItem("cartId", cartId);
       }
 
-      const updatedCart = await addToCart(cartId, [
-        { merchandiseId: variantId, quantity },
-      ]);
+      const line = { merchandiseId: variantId, quantity };
+      if (sellingPlanId) line.sellingPlanId = sellingPlanId;
+
+      const updatedCart = await addToCart(cartId, [line]);
 
       set({ cart: updatedCart, loading: false, isOpen: true });
     } catch (error) {

@@ -353,6 +353,29 @@ export async function removeFromCart(cartId, lineIds) {
   return data.cartLinesRemove.cart;
 }
 
+export async function cartDiscountCodesUpdate(cartId, discountCodes) {
+  const query = `
+    ${CART_FRAGMENT}
+    mutation CartDiscountCodesUpdate($cartId: ID!, $discountCodes: [String!]) {
+      cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) {
+        cart {
+          ...CartFields
+        }
+        userErrors {
+          field
+          message
+        }
+      }
+    }
+  `;
+
+  const data = await shopifyFetch({
+    query,
+    variables: { cartId, discountCodes },
+  });
+  return data.cartDiscountCodesUpdate.cart;
+}
+
 // ============ HELPERS ============
 
 export function formatPrice(amount, currencyCode = "USD") {

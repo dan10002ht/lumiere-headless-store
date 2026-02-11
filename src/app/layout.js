@@ -4,6 +4,7 @@ import Footer from "@/components/layout/footer";
 import CartDrawer from "@/components/cart/cart-drawer";
 import CartInitializer from "@/components/layout/cart-initializer";
 import PageTransition from "@/components/motion/page-transition";
+import SubscriptionSDKProvider from "@/components/subscription/sdk-provider";
 import "./globals.css";
 
 const inter = Inter({
@@ -28,6 +29,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${inter.variable} ${cormorant.variable} font-sans`}>
         <div className="h-[2px] bg-gradient-to-r from-transparent via-warm to-transparent" />
+        <SubscriptionSDKProvider>
         <CartInitializer />
         <Header />
         <main className="min-h-screen">
@@ -35,6 +37,7 @@ export default function RootLayout({ children }) {
         </main>
         <Footer />
         <CartDrawer />
+        </SubscriptionSDKProvider>
       </body>
     </html>
   );
