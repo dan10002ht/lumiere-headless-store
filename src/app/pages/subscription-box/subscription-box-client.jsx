@@ -5,11 +5,17 @@ import { BoxSDK } from "joy-subscription-sdk/box";
 import useCartStore from "@/store/cart-store";
 import { cartDiscountCodesUpdate } from "@/lib/shopify";
 
+const sdkConfig = {
+  shopDomain: process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN,
+  storefrontAccessToken:
+    process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN,
+};
+
 export default function SubscriptionBoxClient() {
   const sdkRef = useRef(null);
 
   useEffect(() => {
-    const sdk = new BoxSDK();
+    const sdk = new BoxSDK(sdkConfig);
     sdkRef.current = sdk;
 
     const unsubscribe = sdk.on("add-to-cart", async (data) => {

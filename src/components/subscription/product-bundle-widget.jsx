@@ -5,12 +5,18 @@ import { ProductBundleSDK } from "joy-subscription-sdk/productBundle";
 import useCartStore from "@/store/cart-store";
 import { cartDiscountCodesUpdate } from "@/lib/shopify";
 
+const sdkConfig = {
+  shopDomain: process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN,
+  storefrontAccessToken:
+    process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN,
+};
+
 export default function ProductBundleWidget({ productHandle }) {
   const sdkRef = useRef(null);
   const unsubRef = useRef(null);
 
   useEffect(() => {
-    const sdk = new ProductBundleSDK();
+    const sdk = new ProductBundleSDK(sdkConfig);
     sdkRef.current = sdk;
 
     unsubRef.current = sdk.on("add-to-cart", async (data) => {
