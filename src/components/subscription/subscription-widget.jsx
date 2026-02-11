@@ -12,7 +12,11 @@ export default function SubscriptionWidget({
   const unsubRef = useRef(null);
 
   useEffect(() => {
-    const sdk = new WidgetSDK();
+    const sdk = new WidgetSDK({
+      shopDomain: process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN,
+      storefrontAccessToken:
+        process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN,
+    });
     sdkRef.current = sdk;
 
     unsubRef.current = sdk.on("plan:selected", (data) => {

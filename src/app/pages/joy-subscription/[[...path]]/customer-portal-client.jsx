@@ -9,7 +9,11 @@ export default function CustomerPortalClient() {
   const { addItem, openCart } = useCartStore();
 
   useEffect(() => {
-    const sdk = new PortalSDK();
+    const sdk = new PortalSDK({
+      shopDomain: process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN,
+      storefrontAccessToken:
+        process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN,
+    });
     sdkRef.current = sdk;
 
     // Handle "Add new subscription" from portal

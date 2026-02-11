@@ -10,7 +10,11 @@ export default function SubscriptionBoxClient() {
   const { addItem, cart, openCart } = useCartStore();
 
   useEffect(() => {
-    const sdk = new BoxSDK();
+    const sdk = new BoxSDK({
+      shopDomain: process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN,
+      storefrontAccessToken:
+        process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN,
+    });
     sdkRef.current = sdk;
 
     const unsubscribe = sdk.on("add-to-cart", async (data) => {
