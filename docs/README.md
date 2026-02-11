@@ -143,7 +143,7 @@ const sdk = WidgetSDK.getInstance();
 | ----------------------- | -------- | ------------------------------------------------------ |
 | `shopDomain`            | Yes      | Shopify shop domain (e.g., `store.myshopify.com`)      |
 | `storefrontAccessToken` | Yes      | Shopify Storefront API access token                    |
-| `apiVersion`            | No       | Storefront API version (default: `2024-01`)            |
+| `apiVersion`            | No       | Storefront API version (default: `2025-01`)            |
 | `apiBaseUrl`            | No       | Custom API base URL (default: `https://sub.joyapp.gg`) |
 
 ---
@@ -226,6 +226,7 @@ window.addEventListener('avada:plan:selected', function(e) {
 | `plan:selected`      | User selected a subscription plan     |
 | `init`               | Widget initialized                    |
 | `portal:init`        | Customer portal initialized           |
+| `box:init`           | Subscription box initialized          |
 
 ## Common API (BaseSDK)
 

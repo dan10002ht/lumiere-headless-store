@@ -7,23 +7,18 @@ import { cartDiscountCodesUpdate } from "@/lib/shopify";
 
 export default function SubscriptionBoxClient() {
   const sdkRef = useRef(null);
-  const { addItem, cart, openCart } = useCartStore();
 
   useEffect(() => {
-    const sdk = new BoxSDK({
-      shopDomain: process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN,
-      storefrontAccessToken:
-        process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN,
-    });
+    const sdk = new BoxSDK();
     sdkRef.current = sdk;
 
     const unsubscribe = sdk.on("add-to-cart", async (data) => {
-      // Add all lines to cart
+      const { addItem, cart, openCart } = useCartStore.getState();
+
       for (const line of data.lines) {
         await addItem(line.merchandiseId, line.quantity, line.sellingPlanId);
       }
 
-      // Apply discount codes if any
       if (data.discountCodes?.length > 0 && cart?.id) {
         await cartDiscountCodesUpdate(cart.id, data.discountCodes);
       }

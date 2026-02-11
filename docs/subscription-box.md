@@ -77,7 +77,7 @@ await sdk.initSubscriptionBox({
 3. Sets `window.AVADA_SUBSCRIPTION_BOX` with box config (for scripttag)
 4. Initializes `window.Shopify` globals (currency, country, shop, routes) from Storefront API localization data
 5. Loads box scripts from CDN
-6. Emits `avada:subscription:init` event
+6. Emits `avada:box:init` event
 
 ### `destroySubscriptionBox()`
 

@@ -10,11 +10,7 @@ export default function ProductBundleWidget({ productHandle }) {
   const unsubRef = useRef(null);
 
   useEffect(() => {
-    const sdk = new ProductBundleSDK({
-      shopDomain: process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN,
-      storefrontAccessToken:
-        process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN,
-    });
+    const sdk = new ProductBundleSDK();
     sdkRef.current = sdk;
 
     unsubRef.current = sdk.on("add-to-cart", async (data) => {

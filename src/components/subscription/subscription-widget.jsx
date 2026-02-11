@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef } from "react";
 import { WidgetSDK } from "joy-subscription-sdk/widget";
 
 export default function SubscriptionWidget({
@@ -9,28 +9,16 @@ export default function SubscriptionWidget({
   onPlanSelect,
 }) {
   const sdkRef = useRef(null);
-  const unsubRef = useRef(null);
 
   useEffect(() => {
-    const sdk = new WidgetSDK({
-      shopDomain: process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN,
-      storefrontAccessToken:
-        process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN,
-    });
+    const sdk = WidgetSDK.getInstance();
     sdkRef.current = sdk;
 
-    unsubRef.current = sdk.on("plan:selected", (data) => {
-      onPlanSelect?.(data);
-    });
+    const unsubscribe = sdk.on("plan:selected", onPlanSelect);
+    sdk.initProduct(productHandle);
 
-    sdk.initProduct(productHandle, {
-      ...(variantId && { variantId }),
-    });
-
-    return () => {
-      unsubRef.current?.();
-      sdk.destroy();
-    };
+    return () => unsubscribe();
+    // Don't destroy singleton on unmount
   }, [productHandle]);
 
   // Sync variant changes from parent
