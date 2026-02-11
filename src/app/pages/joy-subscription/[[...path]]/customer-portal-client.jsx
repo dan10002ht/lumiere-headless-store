@@ -2,9 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { PortalSDK } from "joy-subscription-sdk/portal";
-import { SCRIPTS } from "joy-subscription-sdk/core";
 import useCartStore from "@/store/cart-store";
-import { reloadScript, removeScript } from "@/lib/sdk-script-loader";
 
 const sdkConfig = {
   shopDomain: process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN,
@@ -28,14 +26,11 @@ export default function CustomerPortalClient() {
       openCart();
     });
 
-    sdk
-      .initCustomerPortal({ autoLoadScript: false })
-      .then(() => reloadScript(SCRIPTS.CUSTOMER_PORTAL));
+    sdk.initCustomerPortal();
 
     return () => {
       unsubscribe();
       sdk.destroyCustomerPortal();
-      removeScript(SCRIPTS.CUSTOMER_PORTAL);
     };
   }, []);
 
